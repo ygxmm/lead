@@ -1,42 +1,34 @@
-# Checks that the tweak builds, and lets anyone with a fork get the packages from the
-# run's artifacts. Publishing a release is tools/release.sh, run locally.
-name: Build
-
-permissions:
-    contents: read
+name: Build Lead Tweak
 
 on:
-    push:
-        branches: [ "main" ]
-    pull_request:
-    workflow_dispatch:
+  push:
+  pull_request:
+  workflow_dispatch:
 
 jobs:
-    build:
-        runs-on: macos-latest
-        steps:
-            - uses: actions/checkout@v4
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
 
-            - name: Set up Theos
-              uses: waruhachi/theos-action@v2.4.6
-              with:
-                theos-src: 'waruhachi/theos'
-                theos-branch: 'main'
-                sdks-src: 'waruhachi/sdks'
-                sdks-branch: 'main'
+      - name: Set up Theos
+        uses: waruhachi/theos-action@v2.4.6
+        with:
+          theos-src: 'waruhachi/theos'
+          theos-branch: 'main'
+          sdks-src: 'waruhachi/sdks'
+          sdks-branch: 'main'
 
-            # tools/package_variants.sh builds the rootless and RootHide debs with it.
-            - name: Install dpkg
-              run: brew install dpkg
+      - name: Install dpkg
+        run: brew install dpkg
 
-            - name: Build packages
-              shell: bash
-              run: make clean package FINALPACKAGE=1
+      - name: Build packages
+        run: make clean package FINALPACKAGE=1
 
-            - name: Upload packages
-              uses: actions/upload-artifact@v4
-              with:
-                name: lead-packages
-                path: |
-                    packages/*.deb
-                    packages/Lead.dylib
+      - name: Upload packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: lead-packages
+          path: |
+            packages/*.deb
+            packages/Lead.dylib
