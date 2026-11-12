@@ -1818,7 +1818,20 @@ class TLParser: NSObject {
     private static func text(from message: Api.Message) -> String? {
         switch message {
         case let .message(data):
-            return data.message
+            if let msg = data.message, !msg.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                return msg
+            }
+            if let media = data.media {
+                switch media {
+                case .messageMediaPhoto:
+                    return "[图片]"
+                case .messageMediaDocument:
+                    return "[视频/文件]"
+                default:
+                    return "[媒体消息]"
+                }
+            }
+            return nil
         default:
             return nil
         }
